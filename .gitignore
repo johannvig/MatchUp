@@ -3,3 +3,7 @@
 # IDE
 .idea
 .vscode
+
+frontend/matchup/.next/*
+frontend/matchup/node_modules/*
+frontend/matchup/.next/*
