@@ -3,5 +3,7 @@
 # IDE
 .idea
 .vscode
-
 frontend/matchup/pnpm-lock.yaml
+
+frontend/matchup/.next/*
+frontend/matchup/node_modules/*
