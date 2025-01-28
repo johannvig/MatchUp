@@ -1,0 +1,7 @@
+flask>=2.2.5
+pytest==6.2.5
+pytest-flask==1.2.0
+peewee==3.14.4
+markupsafe==3.0.2
+flask-cors==5.0.0
+requests==2.32.3
