@@ -12,7 +12,7 @@ const requestCookies = await cookies();
  * @param valeur la valeur à stocker
  */
 export const setItem = async (cle : string, valeur : string) => {
-    let options : ResponseCookie = {
+    const options : ResponseCookie = {
         name: cle,
         value: valeur,
         httpOnly: true, //Empêche le cookie d'être lu par du code JavaScript
@@ -29,7 +29,7 @@ export const setItem = async (cle : string, valeur : string) => {
  * @returns la valeur du cookie, ou null si le cookie n'existe pas pour la clé donnée
  */
 export const getItem = async (cle : string) => {
-    let resultat = requestCookies.get(cle);
+    const resultat = requestCookies.get(cle);
     return resultat ? resultat.value : null;
 }
 
