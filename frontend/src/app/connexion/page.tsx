@@ -5,11 +5,13 @@ import FormulaireInscription from "@/app/components/connexion/formulaireInscript
 import {useState} from "react";
 import {connexion, enregistrer} from "@/app/controleurs/connexionControleur";
 import ReinitialiserMotDePasse from "@/app/components/connexion/reinitialiserMotDePasse";
+import Popup from "@/app/components/UI/popup";
 
 export default function Connexion() {
 
     const [afficherFormulaireInscription, setAfficherFormulaireInscription] = useState(false);
     const [reinitialiserMotDePasse, setReinitialiserMotDePasse] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
 
     async function connecter(email: string, motDePasse: string) {
         await connexion(email, motDePasse);
@@ -40,11 +42,31 @@ export default function Connexion() {
 
                 <div className={"flex flex-col mt-10"}>
                     <a onClick={() => setReinitialiserMotDePasse(true)}>Mot de passe oublié</a>
-                    <a>Aide</a>
+                    <a onClick={() => setShowPopup(true)}>Aide</a>
                 </div>
             </div>
 
             <ReinitialiserMotDePasse show={reinitialiserMotDePasse} onClose={() => setReinitialiserMotDePasse(false)}/>
+            <Popup
+                show={showPopup}
+                onClose={() => setShowPopup(false)}
+                titre={"Popup Test"}
+                texte={"Bonjour je suis une popup !"}
+                buttons={[
+                    {
+                        text: "Fermer",
+                        onClick: () => setShowPopup(false)
+                    },
+                    {
+                        text: "Fermer",
+                        onClick: () => setShowPopup(false)
+                    },
+                    {
+                        text: "Fermer",
+                        onClick: () => setShowPopup(false)
+                    }
+                ]}
+            />
         </div>
     )
 }
