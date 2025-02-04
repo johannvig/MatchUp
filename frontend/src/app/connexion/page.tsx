@@ -4,10 +4,12 @@ import FormulaireConnexion from "@/app/components/connexion/formulaireConnexion"
 import FormulaireInscription from "@/app/components/connexion/formulaireInscription";
 import {useState} from "react";
 import {connexion, enregistrer} from "@/app/controleurs/connexionControleur";
+import ReinitialiserMotDePasse from "@/app/components/connexion/reinitialiserMotDePasse";
 
 export default function Connexion() {
 
     const [afficherFormulaireInscription, setAfficherFormulaireInscription] = useState(false);
+    const [reinitialiserMotDePasse, setReinitialiserMotDePasse] = useState(false);
 
     async function connecter(email: string, motDePasse: string) {
         await connexion(email, motDePasse);
@@ -37,10 +39,12 @@ export default function Connexion() {
                 }
 
                 <div className={"flex flex-col mt-10"}>
-                    <a>Mot de passe oublié</a>
+                    <a onClick={() => setReinitialiserMotDePasse(true)}>Mot de passe oublié</a>
                     <a>Aide</a>
                 </div>
             </div>
+
+            <ReinitialiserMotDePasse show={reinitialiserMotDePasse} onClose={() => setReinitialiserMotDePasse(false)}/>
         </div>
     )
 }

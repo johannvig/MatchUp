@@ -6,6 +6,7 @@
 
 :root {
   --arriere-plan: #ffffff;
+  --arriere-plan-popup: rgba(21, 21, 21, 0.88);
   --premier-plan: #000000;
   --clair: #dfdddd;
   --clair-hover: #bcbbbb;

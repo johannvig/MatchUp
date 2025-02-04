@@ -10,6 +10,7 @@ export default {
     extend: {
       colors: {
         'arriere-plan': '#ffffff',
+        'arriere-plan-popup' : 'var(--arriere-plan-popup)',
         'premier-plan': '#000000',
         'clair': '#dfdddd',
         'clair-hover': '#bcbbbb',
