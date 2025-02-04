@@ -1,21 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --arriere-plan: #ffffff;
+  --premier-plan: #000000;
+  --clair: #dfdddd;
+  --clair-hover: #bcbbbb;
+  --vert-uqac: #6b8915;
+  --vert-clair-uqac: #95b147;
+  --valid: #6b8915;
+  --invalid: #ff0000;
+  --disabled: #b8c396;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  transition: all .3s ease;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--arriere-plan);
+  background: var(--arriere-plan);
+  font-family: "Montserrat", serif;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  color: var(--premier-plan);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 2rem;
+  font-weight: normal;
+}
+
+a {
+  color: var(--vert-uqac);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--vert-clair-uqac);
+  text-decoration: underline;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--vert-uqac);
+  color: var(--arriere-plan);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+}
+
+button:hover {
+  background-color: var(--vert-clair-uqac);
+}
+
+button:disabled {
+  transform: scale(0.90);
+  background-color: var(--disabled);
+  cursor: default;
+}
+
+input, select {
+  color: var(--premier-plan);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--clair);
+  font: inherit;
+}
+
+input:hover, select:hover{
+  background-color: var(--clair-hover);
+}
+
+input:focus, select:focus {
+  outline: none;
 }

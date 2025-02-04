@@ -2,6 +2,8 @@ import {deleteItem, getItem, hasItem, setItem} from "@/app/utils/cookiesUtils";
 
 const cleCookieToken : string = 'token';
 
+const API_URL = "example.com";
+
 /**
  * Sauve le token de connexion dans les cookies de manière sécurisé.
  * Si le token existe déjà, celui-ci est écrasé.
@@ -39,7 +41,7 @@ export async function supprimerToken() {
 export async function connexion(email: string, motDePasse: string) : Promise<boolean> {
 
     //Envoi de la requête de connexion à l'API
-    const res = await fetch(`${process.env}/connexion`, {
+    const res = await fetch(`${API_URL}/connexion`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -83,7 +85,7 @@ export async function enregistrer(
 ) {
 
     //envoi de la requete
-    const res = await fetch(`${process.env}/enregistrer`, {
+    const res = await fetch(`${API_URL}/enregistrer`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -119,7 +121,7 @@ export async function verifierToken() {
     }
 
     //Envoi de la requête de connexion à l'API
-    const res = await fetch(`${process.env}/verifierToken`, {
+    const res = await fetch(`${API_URL}/verifierToken`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

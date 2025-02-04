@@ -9,8 +9,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        'arriere-plan': '#ffffff',
+        'premier-plan': '#000000',
+        'clair': '#dfdddd',
+        'clair-hover': '#bcbbbb',
+        'vert-uqac': '#6b8915',
+        'vert-clair-uqac': '#95b147',
+        'valid': '#6b8915',
+        'invalid': '#ff0000',
+        'disabled': '#939f70',
       },
     },
   },
