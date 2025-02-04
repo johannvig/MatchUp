@@ -5,13 +5,16 @@ import FormulaireInscription from "@/app/components/connexion/formulaireInscript
 import {useState} from "react";
 import {connexion, enregistrer} from "@/app/controleurs/connexionControleur";
 import ReinitialiserMotDePasse from "@/app/components/connexion/reinitialiserMotDePasse";
-import Popup from "@/app/components/UI/popup";
+import Popup, {PopupButton} from "@/app/components/UI/popup";
 
 export default function Connexion() {
 
     const [afficherFormulaireInscription, setAfficherFormulaireInscription] = useState(false);
     const [reinitialiserMotDePasse, setReinitialiserMotDePasse] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [popupTitre, setPopupTitre] = useState("");
+    const [popupTexte, setPopupTexte] = useState("");
+    const [popupButtons, setPopupButtons] = useState<PopupButton[]>([]);
 
     async function connecter(email: string, motDePasse: string) {
         await connexion(email, motDePasse);
@@ -19,6 +22,19 @@ export default function Connexion() {
 
     async function inscrire(prenom: string, nom: string, sexe: string, nationalite: string, email: string, dateNaiss: Date, motDePasse: string) {
         await enregistrer(prenom, nom, sexe, email, nationalite, dateNaiss.toString(), motDePasse);
+    }
+
+    function showAide() {
+        setPopupTitre("Aide");
+        setPopupTexte("Si vous éprouvez des difficultés à vous connecter, veuillez contacter le support technique. ");
+        setPopupButtons([
+            {
+                text: "Page de contact",
+                onClick: () => window.open('https://www.uqac.ca/soutientechnique/', '_blank', 'noopener noreferrer'),
+                icon: "fleche-dans-carre"
+            },
+        ]);
+        setShowPopup(true);
     }
 
     return (
@@ -42,7 +58,7 @@ export default function Connexion() {
 
                 <div className={"flex flex-col mt-10"}>
                     <a onClick={() => setReinitialiserMotDePasse(true)}>Mot de passe oublié</a>
-                    <a onClick={() => setShowPopup(true)}>Aide</a>
+                    <a onClick={showAide}>Aide</a>
                 </div>
             </div>
 
@@ -50,22 +66,9 @@ export default function Connexion() {
             <Popup
                 show={showPopup}
                 onClose={() => setShowPopup(false)}
-                titre={"Popup Test"}
-                texte={"Bonjour je suis une popup !"}
-                buttons={[
-                    {
-                        text: "Fermer",
-                        onClick: () => setShowPopup(false)
-                    },
-                    {
-                        text: "Fermer",
-                        onClick: () => setShowPopup(false)
-                    },
-                    {
-                        text: "Fermer",
-                        onClick: () => setShowPopup(false)
-                    }
-                ]}
+                titre={popupTitre}
+                texte={popupTexte}
+                buttons={popupButtons}
             />
         </div>
     )

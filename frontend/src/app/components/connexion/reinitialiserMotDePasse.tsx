@@ -21,8 +21,9 @@ export default function ReinitialiserMotDePasse({show, onClose}: {show: boolean,
                         exit={{scale: 0, opacity: 0}}
                         className={"fixed z-10 p-6 pt-12 bg-arriere-plan rounded-xl flex flex-col gap-4"}
                     >
-                        <button className={"h-10 absolute top-1 right-1 p-2 bg-invalid hover:bg-premier-plan"}
-                                onClick={onClose}>
+                        <button
+                            className={"h-8 absolute top-2 right-2 p-1 bg-invalid hover:bg-premier-plan rounded-3xl"}
+                            onClick={onClose}>
                             <img src={"/ico/close.svg"} alt={"fermer"} className={"size-full invert"}/>
                         </button>
                         <h2>Réinitialiser le mot de passe</h2>
