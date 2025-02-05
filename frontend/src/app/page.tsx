@@ -55,20 +55,20 @@ export default function Accueil() {
       </div>
       <div id="containeurSportEquipe">
         <div className="sport">
-          <a>Tennis</a>
-          <img src="accueil/tennis.png" alt="" />
+          <a>Footbal US</a>
+          <img src="accueil/football-us.jpg" alt="" />
         </div>
         <div className="sport">
-        <img src="accueil/pickelball.png" alt="" />
-          <a>Pickelball</a>
+          <img src="accueil/hockey.jpg" alt="" />
+          <a>Hockey</a>
         </div>
         <div className="sport">
-          <a>Badminton</a>
-          <img src="accueil/badminton.png" alt="" />
+          <a>Basket</a>
+          <img src="accueil/basket.jpg" alt="" />
         </div>
         <div className="sport">
-        <img src="accueil/soccer.png" alt="" />
-          <a>Soccer</a>
+          <img src="accueil/volley-ball.jpg" alt="" />
+          <a>Volley ball</a>
         </div>
       </div>
       <Footer /> {/* Ajoute ceci ici */}
