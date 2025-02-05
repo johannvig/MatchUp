@@ -142,3 +142,26 @@ export async function verifierToken() {
         return false;
     }
 }
+
+/**
+ * Envoi un email de récupération de mot de passe à l'adresse email spécifiée
+ * Si l'email existe dans la base de données, un email de récupération est envoyé
+ * @param email
+ */
+export async function envoyerEmailRecuperationMotDePasse(email: string) {
+    //Envoi de la requête de connexion à l'API
+    const res = await fetch(`${API_URL}/emailRecuperation`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email}),
+    });
+
+    //Traitement de la réponse
+    if (res.status === 200) {
+        return true;
+    } else {
+        return false;
+    }
+}

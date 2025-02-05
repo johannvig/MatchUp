@@ -3,7 +3,7 @@
 import FormulaireConnexion from "@/app/components/connexion/formulaireConnexion";
 import FormulaireInscription from "@/app/components/connexion/formulaireInscription";
 import {useState} from "react";
-import {connexion, enregistrer} from "@/app/controleurs/connexionControleur";
+import {connexion, enregistrer, envoyerEmailRecuperationMotDePasse} from "@/app/controleurs/connexionControleur";
 import ReinitialiserMotDePasse from "@/app/components/connexion/reinitialiserMotDePasse";
 import Popup, {PopupButton} from "@/app/components/UI/popup";
 
@@ -22,6 +22,10 @@ export default function Connexion() {
 
     async function inscrire(prenom: string, nom: string, sexe: string, nationalite: string, email: string, dateNaiss: Date, motDePasse: string) {
         await enregistrer(prenom, nom, sexe, email, nationalite, dateNaiss.toString(), motDePasse);
+    }
+
+    async function reinitialiserMotDePasseFunction(email: string) {
+        return await envoyerEmailRecuperationMotDePasse(email);
     }
 
     function showAide() {
@@ -62,7 +66,7 @@ export default function Connexion() {
                 </div>
             </div>
 
-            <ReinitialiserMotDePasse show={reinitialiserMotDePasse} onClose={() => setReinitialiserMotDePasse(false)}/>
+            <ReinitialiserMotDePasse show={reinitialiserMotDePasse} onClose={() => setReinitialiserMotDePasse(false)} reinitialiserMotDePasseFonction={reinitialiserMotDePasseFunction}/>
             <Popup
                 show={showPopup}
                 onClose={() => setShowPopup(false)}
