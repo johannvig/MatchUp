@@ -1,0 +1,77 @@
+#panel{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 20%;
+    height: 100vh;
+    padding-left: 1%;
+    padding-top: 2%;
+    justify-content: space-between;
+}
+#btnRetour{
+    border: 1px black solid;
+    width: 10%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+}
+p{
+    color: black;
+}
+img{
+    width: 20px;
+    height: 20px;
+}
+#logo{
+    width: 75%;
+    height: 10%;
+    object-fit: cover;
+    margin-left: 10.5%;
+    margin-top: -40%;
+}
+#containeurRedirection{
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0% 5%;
+}
+.redirection,.redirectionEnCours{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    padding: 5% 5%;
+    border-radius: 5px;
+    border: transparent 1px solid;
+}
+.redirection:hover,.redirectionEnCours:hover{
+    cursor: pointer;
+    border: black 1px solid;
+}
+.redirectionEnCours{
+    background-color: #6F803F;
+}
+
+#footer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-bottom: 10%;
+    height: 20%;
+}
+#containeurInfoAdmin{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.actionFooter{
+    display: flex;
+    flex-direction: row;
+}
+.actionFooter h2{
+    margin-left: 20%;
+    color: black;
+}
