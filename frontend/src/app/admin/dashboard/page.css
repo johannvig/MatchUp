@@ -1,0 +1,39 @@
+#dashboard{
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    color: black;
+}
+#calendrier{
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 60%;
+}
+#containeurMois{
+    display: flex;
+    flex-direction: row;
+    width: 40%;
+    justify-content: space-between;
+    margin-left: 10%;
+    margin-top: 10%;
+}
+#containeurSelectMois{
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    justify-content: space-between;
+
+}
+.jourSemaine{
+    font-weight: 200;
+    width: 10%;
+    text-align: center;
+}
+.jour{
+    background-color: gray;
+    border-radius: 5%;
+    width: 80%;
+    margin-left: 10%;
+    height: 10vh;
+}
