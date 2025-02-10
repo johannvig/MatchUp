@@ -1,101 +1,77 @@
-import Image from "next/image";
-
-export default function Home() {
+import './globals.css';
+import './page.css';
+import Header from './Composants/Header/page'; 
+import Footer from './Composants/Footer/page'; 
+export default function Accueil() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div id="Accueil">
+      <Header /> {/* Ajoute ceci ici */}
+      <div id="header">
+        <img id="imageAccueil" src="accueil/AccueilTerrain.png" alt="" />
+        <div id="containeurText">
+          <h1>Bienvenue sur le service des sports de l’uqac</h1>
+          <h3><br></br><br></br>Vous retrouverez ici toutes informations pour pratiqué du sport au sein de l’uqac <br></br><br></br>Vous pourez ici vous inscrire à des cours, participé à des tournois ainsi que reserver des terrains pour jouer entre vous.</h3>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+      </div>
+      <div className="titre">
+        <div className="barreSeparation"></div>
+        <h2>Comment fonctionne ce service ?</h2>
+        <div className="barreSeparation"></div>
+      </div>
+      <div id="containeurFonctionnementService">
+        <div id="containeurText">
+          <p>Ce service a pour but de vous permettre d’accéder facilement aux équipements sportifs de l’UQAC. Vous y trouverez des sports comme le badminton, le tennis, le pickleball, et bien d’autres activités.</p>
+          <p><br />Vous pouvez réserver un terrain ou même participer à un tournoi. <br />
+              - Étudiants : La réservation d’un terrain est gratuite.<br />
+              - Employés : Vous bénéficiez d’une réduction.<br />
+              - Externes : Vous êtes les bienvenus moyennant une participation financière, qui contribue à l’entretien des magnifiques équipements sportifs de l’UQAC.</p>
+          <p>Si vous n’avez pas de raquette ou d’équipement, pas de panique ! L’UQAC propose également la location de matériel.</p>
+        </div>
+        <img src="accueil/imageBad.png" alt="" />
+      </div>
+      <div className="titre">
+      <div className="barreSeparation"></div>
+        <h2>Réserver un de nos terrains</h2>
+        <div className="barreSeparation"></div>
+      </div>
+      <div id="containeurReservationSport">
+        <a className="sportPetit">
+          <img className='imagePetiteImage' src="accueil/badmintonReservation.png" alt="" />
+          <button className='btnReservation'>Reserver un terrain de badminton</button>
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
+        <a className="sportPetit">
+        <img className='imagePetiteImage' src="accueil/pickelballReservation.png" alt="" />
+          <button className='btnReservation'>Reserver un terrain de pickleball</button>
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
+        <a className="sportPetit">
+        <img className='imagePetiteImage' src="accueil/tennisReservation.png" alt="" />
+          <button className='btnReservation'>Reserver un terrain de tennis</button>
         </a>
-      </footer>
+      </div>
+      <div className="titre">
+        <div className="barreSeparation"></div>
+        <h2>Sport en équipes</h2>
+        <div className="barreSeparation"></div>
+      </div>
+      <div id="containeurSportEquipe">
+        <div className="sport">
+          <a>Tennis</a>
+          <img src="accueil/tennis.png" alt="" />
+        </div>
+        <div className="sport">
+        <img src="accueil/pickelball.png" alt="" />
+          <a>Pickelball</a>
+        </div>
+        <div className="sport">
+          <a>Badminton</a>
+          <img src="accueil/badminton.png" alt="" />
+        </div>
+        <div className="sport">
+        <img src="accueil/soccer.png" alt="" />
+          <a>Soccer</a>
+        </div>
+      </div>
+      <Footer /> {/* Ajoute ceci ici */}
     </div>
   );
 }
