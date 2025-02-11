@@ -1,11 +1,22 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from routes import base  # Importation correcte du blueprint
+from flask import Flask
+from database.config import db
+from database.models import *
+from routes import base  
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
 app.register_blueprint(base)
 
+# Configuration SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialisation de la base de données avec l'application Flask
+db.init_app(app)
+
+# Création des tables
+with app.app_context():
+    db.create_all()
+    print("📦 Base de données initialisée !")
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
