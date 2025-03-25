@@ -12,7 +12,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="fixed h-[10vh] w-full flex justify-between items-center bg-white px-10 z-50 shadow">
+    <header className="fixed top-0 z-50 w-full h-[10vh] flex justify-between items-center bg-white shadow-md">
       <div className="flex items-center gap-4">
         <img src="header/logoUqac.png" alt="Logo UQAC" className="h-16" />
         <div className="border-l border-[#6F803F] h-12"></div>
