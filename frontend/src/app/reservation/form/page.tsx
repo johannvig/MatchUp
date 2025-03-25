@@ -8,7 +8,12 @@ export default function ReservationForm() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode') as "jouer_amis" | "rechercher_adversaire" | "inscription_tournoi";
   const [price, setPrice] = useState("Gratuit");
-  const [players, setPlayers] = useState([{ id: 1 }]);
+  const [players, setPlayers] = useState([{ id: 1, isMember: undefined }]);
+  const [nextId, setNextId] = useState(2);
+  const [showPopup, setShowPopup] = useState(false);
+  const [totalPrice, setTotalPrice] = useState("Gratuit");
+
+
 
   const handleMembershipChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const newPlayers = [...players];
@@ -24,9 +29,33 @@ export default function ReservationForm() {
 
   const addPlayer = () => {
     if (players.length < 4) {
-      setPlayers([...players, { id: players.length + 1 }]);
+      setPlayers([...players, { id: nextId, isMember: undefined }]);
+      setNextId(nextId + 1);
     }
   };
+  
+
+  const removePlayer = (index: number) => {
+    const newPlayers = players.filter((_, i) => i !== index);
+    setPlayers(newPlayers);
+  
+    // Réajuster le prix si besoin
+    if (!newPlayers.every(player => player.isMember)) {
+      setPrice("7$");
+    } else {
+      setPrice("Gratuit");
+    }
+  };
+
+  const calculateTotalPrice = () => {
+    const nonUqacPlayers = players.filter(p => p.isMember === false).length;
+    const total = nonUqacPlayers * 7;
+  
+    if (total === 0) return "Gratuit";
+    return `${total}$`;
+  };
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 relative">
@@ -48,37 +77,111 @@ export default function ReservationForm() {
           </p>
 
           <form id="reservationForm" className="space-y-4">
-            {players.map((player, index) => (
-              <div key={player.id} className="mb-4">
-                <h3 className="text-lg font-semibold mb-2">Joueur {player.id}</h3>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Etes-ce que le joueur {player.id} est étudiant(e) / employé à l'UQAC ? <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
-                      <input type="radio" name={`uqac_member_${player.id}`} value="oui" className="mr-2" required onChange={(e) => handleMembershipChange(e, index)} /> Oui
-                    </label>
-                    <label className="flex items-center">
-                      <input type="radio" name={`uqac_member_${player.id}`} value="non" className="mr-2" onChange={(e) => handleMembershipChange(e, index)} /> Non
-                    </label>
-                  </div>
-                </div>
+          {players.map((player, index) => (
+            <div key={player.id} className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-semibold">Joueur {player.id}</h3>
+                {players.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removePlayer(index)}
+                    className="text-red-600 text-sm hover:underline"
+                  >
+                    Supprimer
+                  </button>
+                )}
+              </div>
 
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Adresse email étudiante / employé <span className="text-red-500">*</span>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Est-ce que le joueur {player.id} est étudiant(e) / employé à l'UQAC ? <span className="text-red-500">*</span>
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center">
+                    <input type="radio" name={`uqac_member_${player.id}`} value="oui" className="mr-2" required onChange={(e) => handleMembershipChange(e, index)} /> Oui
                   </label>
-                  <input
-                    type="email"
-                    name={`email_${player.id}`}
-                    placeholder="Entrer l'adresse email"
-                    className="w-full p-2 border border-gray-300 rounded-lg"
-                    required
-                  />
+                  <label className="flex items-center">
+                    <input type="radio" name={`uqac_member_${player.id}`} value="non" className="mr-2" onChange={(e) => handleMembershipChange(e, index)} /> Non
+                  </label>
                 </div>
               </div>
-            ))}
+
+              {player.isMember !== false && (
+                <>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Adresse email étudiante / employé <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name={`email_${player.id}`}
+                      placeholder="Entrer l'adresse email"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Numéro étudiant(e) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name={`etudiant_numero_${player.id}`}
+                      placeholder="Entrer le numéro étudiant"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
+              {player.isMember === false && (
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Prénom <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name={`prenom_${player.id}`}
+                      placeholder="Entrer le prénom"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nom <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name={`nom_${player.id}`}
+                      placeholder="Entrer le nom"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Adresse email personnelle <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name={`email_${player.id}`}
+                      placeholder="Entrer l'adresse email"
+                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+
 
             {mode === "jouer_amis" && players.length < 4 && (
               <button type="button" onClick={addPlayer} className="mt-4 px-4 py-2 bg-green-700 text-white rounded">Ajouter un joueur</button>
@@ -96,51 +199,59 @@ export default function ReservationForm() {
               <p className="text-sm text-gray-500">Dimanche 16 juillet, 18h à 19h</p>
               <p className="text-sm text-gray-500 mt-2">Prix: {price}</p>
             </div>
-            <button type="button" id="payButton" className="w-full bg-green-700 text-white py-2 rounded mt-4">Payer</button>
+            <button
+                type="button"
+                className="w-full bg-green-700 text-white py-2 rounded mt-4"
+                onClick={() => {
+                  const form = document.getElementById("reservationForm") as HTMLFormElement;
+                  if (form && form.checkValidity()) {
+                    setTotalPrice(calculateTotalPrice());
+                    setShowPopup(true);
+                  } else {
+                    form.reportValidity();
+                  }
+                }}
+              >
+                Payer
+              </button>
+
           </div>
         </div>
       </main>
 
-      <div id="paymentPopup" className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center relative">
-          <button className="absolute top-2 right-2 text-gray-500 close-button">
+
+      
+      {showPopup && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center relative min-w-[300px]">
+          <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl"
+            onClick={() => setShowPopup(false)}
+          >
             &times;
           </button>
-          <h2 className="text-xl font-bold mb-4">Paiement</h2>
-          <p className="text-lg mb-4">{price}</p>
+          <h2 className="text-xl font-bold mb-4">Paiement de la partie</h2>
+          <p className="text-lg mb-4">{totalPrice}</p>
           <div className="flex justify-center space-x-4">
-            <button id="cashButton" className="bg-green-700 text-white px-4 py-2 rounded">Cash</button>
-            <button id="onlineButton" className="bg-green-700 text-white px-4 py-2 rounded">En ligne</button>
+            <button
+              className="bg-green-700 text-white px-4 py-2 rounded"
+              onClick={() => window.location.href = "/reservation/form/confirmation"}
+            >
+              Cash
+            </button>
+            <button
+              className="bg-green-700 text-white px-4 py-2 rounded"
+              onClick={() => window.location.href = "/reservation/form/confirmation"}
+            >
+              En ligne
+            </button>
           </div>
         </div>
       </div>
+    )}
 
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          document.getElementById('payButton').addEventListener('click', function () {
-            const form = document.getElementById('reservationForm');
-            if (form.checkValidity()) {
-              document.getElementById('paymentPopup').classList.remove('hidden');
-            } else {
-              form.reportValidity();
-            }
-          });
 
-          document.querySelectorAll('.close-button').forEach(button => {
-            button.addEventListener('click', function () {
-              document.getElementById('paymentPopup').classList.add('hidden');
-            });
-          });
 
-          document.getElementById('cashButton').addEventListener('click', function () {
-            window.location.href = '/reservation/form/confirmation';
-          });
-
-          document.getElementById('onlineButton').addEventListener('click', function () {
-            window.location.href = '/reservation/form/confirmation';
-          });
-        `
-      }} />
     </div>
   );
 } 
