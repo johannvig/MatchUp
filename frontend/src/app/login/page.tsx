@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");           
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -16,16 +16,16 @@ export default function LoginPage() {
     const res = await fetch("http://localhost:5000/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ email, password })     // ✅ Envoyer "email" au lieu de "username"
     });
 
     const data = await res.json();
     if (res.ok) {
-      localStorage.setItem("token", data.token); // Ou cookie sécurisé
-      if (data.role === "admin") {
+      localStorage.setItem("token", data.token || "fake-token"); // Pour plus tard si tu ajoutes JWT
+      if (data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
-        router.push("/profil");
+        router.push("/");
       }
     } else {
       setError(data.error || "Erreur inconnue");
@@ -38,11 +38,11 @@ export default function LoginPage() {
         <h2 className="text-xl font-bold text-center">Connexion</h2>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <input
-          type="text"
-          placeholder="Nom d'utilisateur"
+          type="email"
+          placeholder="Adresse email"
           className="w-full border p-2 rounded"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input

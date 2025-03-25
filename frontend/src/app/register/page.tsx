@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -24,12 +26,18 @@ export default function RegisterPage() {
     const res = await fetch("http://localhost:5000/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({
+        prenom,
+        nom,
+        email,
+        password,
+        role: "user" // ou "admin" selon le besoin
+      })
     });
 
     const data = await res.json();
     if (res.ok) {
-      setSuccess("Compte créé. Redirection...");
+      setSuccess("Compte créé avec succès. Redirection...");
       setTimeout(() => router.push("/login"), 1500);
     } else {
       setError(data.error || "Erreur lors de l'inscription");
@@ -45,10 +53,26 @@ export default function RegisterPage() {
 
         <input
           type="text"
-          placeholder="Nom d'utilisateur"
+          placeholder="Prénom"
           className="w-full border p-2 rounded"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={prenom}
+          onChange={(e) => setPrenom(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Nom"
+          className="w-full border p-2 rounded"
+          value={nom}
+          onChange={(e) => setNom(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Adresse email"
+          className="w-full border p-2 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
@@ -67,6 +91,7 @@ export default function RegisterPage() {
           onChange={(e) => setConfirm(e.target.value)}
           required
         />
+
         <button type="submit" className="w-full bg-[#7A874C] text-white p-2 rounded">
           S'inscrire
         </button>

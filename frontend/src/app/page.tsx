@@ -35,15 +35,15 @@ export default function Accueil() {
         <div className="barreSeparation"></div>
       </div>
       <div id="containeurReservationSport">
-        <a className="sportPetit">
+        <a href="/reservation/badminton/mode" className="sportPetit">
           <img className='imagePetiteImage' src="accueil/badmintonReservation.png" alt="" />
           <button className='btnReservation'>Reserver un terrain de badminton</button>
         </a>
-        <a className="sportPetit">
+        <a href="/reservation/pickleball/mode" className="sportPetit">
         <img className='imagePetiteImage' src="accueil/pickelballReservation.png" alt="" />
           <button className='btnReservation'>Reserver un terrain de pickleball</button>
         </a>
-        <a className="sportPetit">
+        <a href="/reservation/tennis/mode" className="sportPetit">
         <img className='imagePetiteImage' src="accueil/tennisReservation.png" alt="" />
           <button className='btnReservation'>Reserver un terrain de tennis</button>
         </a>
