@@ -1,11 +1,18 @@
-from flask import Flask, jsonify, request
+from flask import Flask
 from flask_cors import CORS
-from routes import base  # Importation correcte du blueprint
+from models.utilisateur import db
+from routes.auth import auth
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///matchup.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.register_blueprint(base)
+db.init_app(app)
+CORS(app)
+
+app.register_blueprint(auth)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
