@@ -21,7 +21,9 @@ export default function LoginPage() {
 
     const data = await res.json();
     if (res.ok) {
-      localStorage.setItem("token", data.token || "fake-token"); // Pour plus tard si tu ajoutes JWT
+      localStorage.setItem("token", data.token || "fake-token");
+      localStorage.setItem("userId", data.user.id);  // 👈 Enregistre l'ID
+
       if (data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
