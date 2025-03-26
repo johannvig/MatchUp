@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type Props = {
@@ -15,17 +15,52 @@ const hours = ["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "2
 
 export default function SportSelector({ title, breadcrumb, restrictionNote }: Props) {
   const today = dates[0];
-  const [selectedSport, setSelectedSport] = useState<string>("Tennis");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const mode = searchParams.get("mode") || "jouer_amis";
+  const sportFromURL = searchParams.get("sport");
+
+  const [selectedSport, setSelectedSport] = useState<string>(sportFromURL || "Tennis");
   const [selectedDate, setSelectedDate] = useState<string>(today);
   const [selectedHours, setSelectedHours] = useState<string[]>([]);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const mode = searchParams.get("mode") || "jouer_amis";
-
-  const handleContinue = () => {
-    router.push(`/reservation/form?mode=${mode}`);
+  // 🧠 Met à jour l’URL à chaque changement de sport
+  const handleSportChange = (sport: string) => {
+    setSelectedSport(sport);
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("sport", sport.toLowerCase()); // propre pour l’URL
+    router.push(`?${current.toString()}`);
   };
+
+  const handleContinue = async () => {
+    const response = await fetch("http://localhost:5000/reservation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dateReservation: selectedDate,
+        heureDebut: selectedHours[0],
+        heureFin: selectedHours[1] || selectedHours[0],
+        statutReservation: "en_attente"
+      }),
+    });
+  
+    if (response.ok) {
+      const result = await response.json();
+      const reservationId = result.id;
+      // Juste avant la redirection
+      sessionStorage.setItem("reservation_sport", selectedSport.toLowerCase());
+      sessionStorage.setItem("reservation_id", reservationId.toString());
+
+      router.push(`/reservation/form?mode=${mode}`);
+
+    } else {
+      alert("Erreur lors de la réservation !");
+    }
+  };
+  
 
   const toggleHourSelection = (hour: string) => {
     if (selectedHours.includes(hour)) {
@@ -45,7 +80,9 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
         return selectedHours.map((hour) => `${hour} à ${parseInt(hour) + 1}:00`).join(" | ");
       }
     }
-    return selectedHours.length === 1 ? `${selectedHours[0]} à ${parseInt(selectedHours[0]) + 1}:00` : "Veuillez sélectionner une heure";
+    return selectedHours.length === 1
+      ? `${selectedHours[0]} à ${parseInt(selectedHours[0]) + 1}:00`
+      : "Veuillez sélectionner une heure";
   };
 
   return (
@@ -56,13 +93,15 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
           <a href="/" className="text-blue-500 hover:underline">Page d'accueil</a> &gt; {breadcrumb}
         </p>
 
-        <form method="GET" className="space-y-6">
+        <form className="space-y-6">
           <div className="flex space-x-4 mb-4">
             {sports.map((sport) => (
               <label
                 key={sport}
-                className={`px-4 py-2 rounded-full cursor-pointer border border-gray-300 ${selectedSport === sport ? "bg-green-700 text-white" : ""}`}
-                onClick={() => setSelectedSport(sport)}
+                className={`px-4 py-2 rounded-full cursor-pointer border border-gray-300 ${
+                  selectedSport === sport ? "bg-green-700 text-white" : ""
+                }`}
+                onClick={() => handleSportChange(sport)}
               >
                 {sport}
               </label>
@@ -73,7 +112,9 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
             {dates.map((date) => (
               <label
                 key={date}
-                className={`flex flex-col items-center px-4 py-2 rounded-lg cursor-pointer border border-gray-300 ${selectedDate === date ? "bg-gray-300" : ""}`}
+                className={`flex flex-col items-center px-4 py-2 rounded-lg cursor-pointer border border-gray-300 ${
+                  selectedDate === date ? "bg-gray-300" : ""
+                }`}
                 onClick={() => {
                   setSelectedDate(date);
                   setSelectedHours([]);
@@ -88,7 +129,9 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
             {hours.map((hour) => (
               <div
                 key={hour}
-                className={`w-full flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer border border-gray-300 ${selectedHours.includes(hour) ? "bg-gray-300" : ""}`}
+                className={`w-full flex justify-between items-center px-4 py-2 rounded-lg cursor-pointer border border-gray-300 ${
+                  selectedHours.includes(hour) ? "bg-gray-300" : ""
+                }`}
                 onClick={() => toggleHourSelection(hour)}
               >
                 {hour}
@@ -110,9 +153,7 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
           </div>
           <div className="mt-4">
             <p className="text-sm text-gray-500">1 terrain</p>
-            <p className="text-sm text-gray-500">
-              {selectedDate} {getFormattedHours()}
-            </p>
+            <p className="text-sm text-gray-500">{selectedDate} {getFormattedHours()}</p>
           </div>
           <button type="button" onClick={handleContinue} className="mt-4 w-full bg-green-700 text-white py-2 rounded">
             Continuer
