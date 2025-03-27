@@ -1,60 +1,58 @@
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Table
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+db = SQLAlchemy()
 
 # --- Tables d'association ---
-
-associer = Table('associer', Base.metadata,
+associer = db.Table('associer',
     Column('idUser', ForeignKey('utilisateur.idUser'), primary_key=True),
     Column('idReservation', ForeignKey('reservation.idReservation'), primary_key=True)
 )
 
-appartenir = Table('appartenir', Base.metadata,
+appartenir = db.Table('appartenir',
     Column('idUser', ForeignKey('utilisateur.idUser'), primary_key=True),
     Column('idRole', ForeignKey('role.idRole'), primary_key=True)
 )
 
-lier = Table('lier', Base.metadata,
+lier = db.Table('lier',
     Column('idSport', ForeignKey('sport.idSport'), primary_key=True),
     Column('idTournoi', ForeignKey('tournoi.idTournoi'), primary_key=True)
 )
 
-relier = Table('relier', Base.metadata,
+relier = db.Table('relier',
     Column('idTerrain', ForeignKey('terrain.idTerrain'), primary_key=True),
     Column('idReservation', ForeignKey('reservation.idReservation'), primary_key=True)
 )
 
-utiliser = Table('utiliser', Base.metadata,
+utiliser = db.Table('utiliser',
     Column('idTerrain', ForeignKey('terrain.idTerrain'), primary_key=True),
     Column('idGame', ForeignKey('game.idGame'), primary_key=True)
 )
 
-contenir = Table('contenir', Base.metadata,
+contenir = db.Table('contenir',
     Column('idTournoi', ForeignKey('tournoi.idTournoi'), primary_key=True),
     Column('idGame', ForeignKey('game.idGame'), primary_key=True)
 )
 
-inscrire = Table('inscrire', Base.metadata,
+inscrire = db.Table('inscrire',
     Column('idUser', ForeignKey('utilisateur.idUser'), primary_key=True),
     Column('idTournoi', ForeignKey('tournoi.idTournoi'), primary_key=True),
     Column('roleParticipant', String)
 )
 
-payer = Table('payer', Base.metadata,
+payer = db.Table('payer',
     Column('idUser', ForeignKey('utilisateur.idUser'), primary_key=True),
     Column('idPaiement', ForeignKey('paiement.idPaiement'), primary_key=True)
 )
 
 # --- Entités principales ---
-
-class Role(Base):
+class Role(db.Model):
     __tablename__ = 'role'
     idRole = Column(Integer, primary_key=True)
     nom = Column(String)
 
-
-class Utilisateur(Base):
+class Utilisateur(db.Model):
     __tablename__ = 'utilisateur'
     idUser = Column(Integer, primary_key=True)
     prenom = Column(String)
@@ -73,8 +71,7 @@ class Utilisateur(Base):
     paiements = relationship('Paiement', secondary=payer)
     roles = relationship('Role', secondary=appartenir)
 
-
-class Reservation(Base):
+class Reservation(db.Model):
     __tablename__ = 'reservation'
     idReservation = Column(Integer, primary_key=True)
     heureDebut = Column(String)
@@ -82,30 +79,27 @@ class Reservation(Base):
     heureFin = Column(String)
     statutReservation = Column(String)
 
-
-class Terrain(Base):
+class Terrain(db.Model):
     __tablename__ = 'terrain'
     idTerrain = Column(Integer, primary_key=True)
     capaciteMax = Column(Integer)
     nomTerrain = Column(String)
 
-
-class Sport(Base):
+class Sport(db.Model):
     __tablename__ = 'sport'
     idSport = Column(Integer, primary_key=True)
     nomSport = Column(String)
     descriptionSport = Column(String)
 
-
-class Game(Base):
+class Game(db.Model):
     __tablename__ = 'game'
     idGame = Column(Integer, primary_key=True)
     scoreEquipe1 = Column(Integer)
     scoreEquipe2 = Column(Integer)
     statutGame = Column(String)
+    sets = Column(String)
 
-
-class Tournoi(Base):
+class Tournoi(db.Model):
     __tablename__ = 'tournoi'
     idTournoi = Column(Integer, primary_key=True)
     nomTournoi = Column(String)
@@ -114,8 +108,7 @@ class Tournoi(Base):
     heureDebut = Column(String)
     heureFin = Column(String)
 
-
-class Paiement(Base):
+class Paiement(db.Model):
     __tablename__ = 'paiement'
     idPaiement = Column(Integer, primary_key=True)
     montant = Column(Float)

@@ -1,5 +1,6 @@
+# models/utilisateur.py
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db  # ✅ Récupère l'instance partagée ici !
+from models import db  # Assure-toi que c'est bien l'instance partagée
 
 class Utilisateur(db.Model):
     __tablename__ = 'utilisateur'
@@ -10,14 +11,19 @@ class Utilisateur(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     mdp = db.Column(db.String(128), nullable=False)
     roleParticipant = db.Column(db.String(20), default="user")
+
     sexe = db.Column(db.String(50))
     langue = db.Column(db.String(50))
     nationalite = db.Column(db.String(50))
+
+    # 🔽 Ajoute bien ces deux champs :
+    points = db.Column(db.Integer)
+    classement = db.Column(db.Integer)
 
     def set_password(self, password):
         self.mdp = generate_password_hash(password)
     
     def check_password(self, password):
         return check_password_hash(self.mdp, password)
-    
+
 
