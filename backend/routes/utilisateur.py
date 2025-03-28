@@ -92,3 +92,59 @@ def get_statistiques_utilisateur(idUser):
     }
 
     return jsonify(statistiques), 200
+
+
+@utilisateur_bp.route("/api/classement", methods=["GET"])
+def get_classement():
+    utilisateurs = Utilisateur.query.all()
+    data = []
+
+    for user in utilisateurs:
+        games_data = []
+        for tournoi in user.tournois:
+            tournoi_games = []
+            for game in tournoi.games:
+                if user in game.joueurs:
+                    # Séparer les sets proprement
+                    sets_equipes = (game.sets or "").split(";")
+                    sets_e1, sets_e2 = [], []
+                    for s in sets_equipes:
+                        try:
+                            e1, e2 = s.split("-")
+                            sets_e1.append(int(e1.strip()))
+                            sets_e2.append(int(e2.strip()))
+                        except:
+                            continue
+
+                    tournoi_games.append({
+                        "setsEquipe1": sets_e1,
+                        "setsEquipe2": sets_e2,
+                        "scoreEquipe1": game.scoreEquipe1,
+                        "scoreEquipe2": game.scoreEquipe2,
+                    })
+
+            if tournoi_games:
+                games_data.append({
+                    "nom": tournoi.nomTournoi,
+                    "date": tournoi.dateTournoi.isoformat() if hasattr(tournoi.dateTournoi, "isoformat") else tournoi.dateTournoi,
+                    "type": tournoi.tableau,
+                    "sport": tournoi.sport.nomSport if tournoi.sport else None,
+                    "matches": tournoi_games
+                })
+
+        data.append({
+            "id": user.idUser,
+            "pseudo": f"{user.prenom} {user.nom}",
+            "sexe": user.sexe.lower() if user.sexe else "",
+            "classement": user.classement,
+            "points": user.points,
+             "categorie": (
+                "Expert" if (user.points or 0) >= 800
+                else "Intermédiaire" if (user.points or 0) >= 500
+                else "Débutant"
+            ),
+            "games": games_data,
+            "xp": user.points or 0,
+        })
+
+    return jsonify(data)
