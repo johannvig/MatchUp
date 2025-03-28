@@ -47,34 +47,48 @@ def delete_utilisateur(idUser):
 
 @utilisateur_bp.route("/api/utilisateur/<int:idUser>/statistiques", methods=["GET"])
 def get_statistiques_utilisateur(idUser):
+    sport = request.args.get("sport")  # ex: "Tennis"
+    tableau = request.args.get("tableau")  # ex: "simple"
+
     user = Utilisateur.query.get(idUser)
-    
     if not user:
         return jsonify({"error": "Utilisateur non trouvé"}), 404
 
-    # Simule des données pour l'exemple (tu peux les remplacer par des vraies requêtes)
+    # Tous les matchs joués par l'utilisateur
+    games = user.games
+
+    # Filtrage par sport et tableau
+    if sport:
+        games = [g for g in games if any(t.sport.nomSport.lower() == sport.lower() for t in g.tournois)]
+    if tableau:
+        games = [g for g in games if any(t.tableau.lower() == tableau.lower() for t in g.tournois)]
+
+    # Classement filtré (tu peux adapter selon logique réelle)
+    classement = user.classement
+
     statistiques = {
-        "classement": user.classement or 0,
+        "classement": classement,
         "points": user.points or 0,
         "categorie": "Expert" if (user.points or 0) >= 800 else "Débutant",
-        "victoires": 13,  # TODO : calculer dynamiquement si tu as les Games
+        "victoires": len([g for g in games if g.scoreEquipe1 > g.scoreEquipe2]),
         "games": [
             {
-                "nom": "Tournoi de printemps",
+                "nom": tournoi.nomTournoi,
+                "sport": tournoi.sport.nomSport,
+                "type": tournoi.tableau,
+                "date": tournoi.dateTournoi,
+                "organisateur": "Organisateur",
                 "matches": [
-                    { "scoreEquipe1": 11, "scoreEquipe2": 9 },
-                    { "scoreEquipe1": 10, "scoreEquipe2": 12 },
-                    { "scoreEquipe1": 11, "scoreEquipe2": 8 },
-                ]
-            },
-            {
-                "nom": "Tournoi du 20 mars",
-                "matches": [
-                    { "scoreEquipe1": 7, "scoreEquipe2": 11 },
-                    { "scoreEquipe1": 11, "scoreEquipe2": 6 },
+                    {
+                        "setsEquipe1": [int(s.split("-")[0]) for s in g.sets.split(";")],
+                        "setsEquipe2": [int(s.split("-")[1]) for s in g.sets.split(";")]
+                    }
+                    for g in tournoi.games if user in g.joueurs
                 ]
             }
-        ]
+            for tournoi in user.tournois
+        ],
+
     }
 
     return jsonify(statistiques), 200

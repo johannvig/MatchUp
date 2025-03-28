@@ -25,6 +25,9 @@ class Utilisateur(db.Model):
     tournois = relationship('Tournoi', secondary=inscrire)
     paiements = relationship('Paiement', secondary=payer)
     roles = relationship('Role', secondary=appartenir)
+    games = db.relationship("Game", secondary="jouer", backref="joueurs")
+    tournois = db.relationship('Tournoi', secondary='inscrire', backref='participants')
+
 
     def set_password(self, password):
         self.mdp = generate_password_hash(password)

@@ -35,8 +35,6 @@ contenir = db.Table('contenir',
     db.Column('idGame', db.Integer, db.ForeignKey('game.idGame'), primary_key=True)
 )
 
-
-
 inscrire = db.Table('inscrire',
     Column('idUser', ForeignKey('utilisateur.idUser'), primary_key=True),
     Column('idTournoi', ForeignKey('tournoi.idTournoi'), primary_key=True),
@@ -49,8 +47,10 @@ payer = db.Table('payer',
 )
 
 
-
-
+jouer = db.Table('jouer',
+    db.Column('idUser', db.Integer, db.ForeignKey('utilisateur.idUser'), primary_key=True),
+    db.Column('idGame', db.Integer, db.ForeignKey('game.idGame'), primary_key=True)
+)
 
 
 
