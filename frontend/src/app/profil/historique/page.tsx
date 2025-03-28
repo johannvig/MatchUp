@@ -8,6 +8,11 @@ import Link from "next/link";
 export default function HistoriquePage() {
   const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
   const [stats, setStats] = useState<any>(null);
+  const [filteredGames, setFilteredGames] = useState<any[]>([]);
+  const [selectedSport, setSelectedSport] = useState<string>("tous");
+  const [matchType, setMatchType] = useState<string>("tous");
+  const [sortBy, setSortBy] = useState<string>("recent");
+
   const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 
   useEffect(() => {
@@ -15,9 +20,34 @@ export default function HistoriquePage() {
 
     fetch(`http://localhost:5000/api/utilisateur/${userId}/statistiques`)
       .then((res) => res.json())
-      .then((data) => setStats(data))
+      .then((data) => {
+        setStats(data);
+        setFilteredGames(data.games || []);
+      })
       .catch((err) => console.error("Erreur chargement stats", err));
   }, [userId]);
+
+  useEffect(() => {
+    if (!stats?.games) return;
+
+    let filtered = [...stats.games];
+
+    if (selectedSport !== "tous") {
+      filtered = filtered.filter((g) => g.sport?.toLowerCase() === selectedSport);
+    }
+
+    if (matchType !== "tous") {
+      filtered = filtered.filter((g) => g.type?.toLowerCase() === matchType);
+    }
+
+    if (sortBy === "recent") {
+      filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } else if (sortBy === "vite") {
+      filtered.sort((a, b) => (a.duree || 0) - (b.duree || 0));
+    }
+
+    setFilteredGames(filtered);
+  }, [selectedSport, matchType, sortBy, stats]);
 
   const toggleAccordion = (index: number) => {
     setActiveAccordion(activeAccordion === index ? null : index);
@@ -36,16 +66,70 @@ export default function HistoriquePage() {
           <StatCard title="Catégorie" value={stats?.categorie || "—"} />
         </div>
 
+        {/* Filtres stylisés */}
+        <div className="flex items-center gap-4 mb-6 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Sport</span>
+            {["tous", "tennis", "badminton", "ping pong"].map((sport) => (
+              <button
+                key={sport}
+                onClick={() => setSelectedSport(sport)}
+                className={`px-3 py-1 rounded-full border ${
+                  selectedSport === sport
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {sport.charAt(0).toUpperCase() + sport.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Tableau</span>
+            {["tous", "simple", "double", "mixte"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setMatchType(type)}
+                className={`px-3 py-1 rounded-full border ${
+                  matchType === type
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Date</span>
+            {["recent", "vite"].map((sort) => (
+              <button
+                key={sort}
+                onClick={() => setSortBy(sort)}
+                className={`px-3 py-1 rounded-full border ${
+                  sortBy === sort
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {sort === "recent" ? "Récents" : "Anciens"}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Liste des tournois */}
         <div className="space-y-4">
-          {(stats?.games || []).map((tournoi: any, index: number) => (
+          {(filteredGames || []).map((tournoi: any, index: number) => (
             <div key={index} className="bg-white rounded-xl shadow">
               <button
                 className="w-full px-4 py-4 flex justify-between items-center text-left"
                 onClick={() => toggleAccordion(index)}
               >
                 <span className="text-sm font-medium">
-                  {tournoi.nom || "Tournoi"} - Organisateur
+                  {tournoi.nom || "Tournoi"} - {tournoi.organisateur || "Organisateur"}
                 </span>
                 {activeAccordion === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </button>

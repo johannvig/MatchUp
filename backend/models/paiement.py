@@ -1,4 +1,4 @@
-from models import db
+from models.associations import db
 
 class Paiement(db.Model):
     __tablename__ = 'paiement'

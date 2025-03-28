@@ -1,11 +1,21 @@
-from sqlalchemy import Column, Integer, String
-from models import db  # Assure-toi que l'instance SQLAlchemy est bien initialisée
+from models.associations import db
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy.orm import relationship
+from models.associations import contenir
 
 class Tournoi(db.Model):
     __tablename__ = 'tournoi'
-    idTournoi = db.Column(db.Integer, primary_key=True)
-    nomTournoi = db.Column(db.String(100))
-    descriptionTournoi = db.Column(db.String(255))
-    dateTournoi = db.Column(db.String(50))
-    heureDebut = db.Column(db.String(20))
-    heureFin = db.Column(db.String(20))
+    idTournoi = Column(Integer, primary_key=True)
+    nomTournoi = Column(String)
+    descriptionTournoi = Column(String)
+    dateTournoi = Column(String)
+    heureDebut = Column(String)
+    heureFin = Column(String)
+
+    sport_id = Column(Integer, ForeignKey('sport.idSport'), nullable=False)
+    sport = relationship('Sport', backref='tournois')
+
+    tableau = db.Column(Enum('simple', 'double', 'mixte', 'autre', name='tableau_type'), nullable=False)
+
+    # 💡 Ici on lie via la table d'association `contenir`
+    games = relationship('Game', secondary=contenir, backref='tournois')

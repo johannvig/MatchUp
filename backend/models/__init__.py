@@ -1,8 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
-# Importer ici les modèles pour qu'ils soient bien pris en compte
+# ⚠️ IMPORTANT : importer les tables d’association en premier
+from models.associations import *
+
+# Ensuite les modèles
 from models.utilisateur import Utilisateur
 from models.reservation import Reservation
 from models.terrain import Terrain

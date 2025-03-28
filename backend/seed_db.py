@@ -1,7 +1,12 @@
 from flask import Flask
 from models import db
 from models.utilisateur import Utilisateur
-from models.models import Game, Sport, Tournoi, Reservation, Terrain
+from models.sport import Sport
+from models.reservation import Reservation
+from models.terrain import Terrain
+from models.tournoi import Tournoi
+from models.game import Game
+
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
@@ -27,13 +32,17 @@ with app.app_context():
     terrain1 = Terrain(nomTerrain="Tennis #1", capaciteMax=2)
 
     # 🏆 Tournoi
+    # 🏆 Tournoi
     tournoi = Tournoi(
         nomTournoi="Tournoi Printemps",
         descriptionTournoi="Tournoi en simple",
         dateTournoi="2025-03-01",
         heureDebut="14:00",
-        heureFin="17:00"
+        heureFin="17:00",
+        sport=tennis,              # 🔗 association au sport
+        tableau="simple"           # 🔗 tableau (simple, double, mixte)
     )
+
 
     # 🕒 Réservation
     reservation = Reservation(dateReservation="2025-03-01", heureDebut="14:00", heureFin="15:00", statutReservation="Confirmée")

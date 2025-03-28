@@ -1,4 +1,4 @@
-from models import db
+from models.associations import db
 
 class Role(db.Model):
     __tablename__ = 'role'
