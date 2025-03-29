@@ -23,18 +23,30 @@ export default function ReservationForm() {
   const [heureFin, setHeureFin] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedSport = sessionStorage.getItem("reservation_sport");
-    const storedId = sessionStorage.getItem("reservation_id");
-    const storedDate = sessionStorage.getItem("reservation_date");
-    const storedDebut = sessionStorage.getItem("reservation_heure_debut");
-    const storedFin = sessionStorage.getItem("reservation_heure_fin");
-
-    setSport(storedSport);
-    setReservationId(storedId);
-    setDate(storedDate);
-    setHeureDebut(storedDebut);
-    setHeureFin(storedFin);
+    setTimeout(() => {
+      const storedSport = sessionStorage.getItem("reservation_sport");
+      const storedId = sessionStorage.getItem("reservation_id");
+      const storedDate = sessionStorage.getItem("reservation_date");
+      const storedDebut = sessionStorage.getItem("reservation_heure_debut");
+      const storedFin = sessionStorage.getItem("reservation_heure_fin");
+  
+      console.log("📥 Données récupérées dans le form (via setTimeout) :", {
+        storedDate,
+        storedDebut,
+        storedFin,
+        storedSport,
+        storedId,
+      });
+  
+      setSport(storedSport);
+      setReservationId(storedId);
+      setDate(storedDate);
+      setHeureDebut(storedDebut);
+      setHeureFin(storedFin);
+    }, 100); // 100 ms
   }, []);
+  
+  
 
   const handleMembershipChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const newPlayers = [...players];
@@ -256,7 +268,7 @@ export default function ReservationForm() {
             <p><span className="font-medium">Sport :</span> {sport || "Non précisé"}</p>
             <p>
               <span className="font-medium">Créneau :</span>{" "}
-              {heureDebut && heureFin ? `${heureDebut} à ${heureFin}` : "Non sélectionné"}
+              { `${heureDebut} à ${heureFin}`}
             </p>
             <p><span className="font-medium">Prix :</span> {price}</p>
 
