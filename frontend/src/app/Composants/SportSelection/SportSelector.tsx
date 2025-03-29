@@ -86,7 +86,7 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
   };
 
   return (
-    <main className="flex space-x-6 mt-32 min-h-screen bg-gray-50 p-6">
+    <main className="text-black flex space-x-6 mt-32 min-h-screen bg-gray-50 p-6">
       <div className="flex-1">
         <h2 className="text-2xl font-semibold mb-4">{title}</h2>
         <p className="text-sm text-gray-500 mb-6">

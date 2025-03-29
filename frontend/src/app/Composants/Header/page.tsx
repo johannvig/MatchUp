@@ -28,7 +28,7 @@ export default function Header() {
             Mon compte
           </a>
         ) : (
-          <a href="/seConnecter" className="text-[#6F803F] border border-[#6F803F] rounded px-4 py-2 hover:bg-[#f0f5e9] transition">
+          <a href="/login" className="text-[#6F803F] border border-[#6F803F] rounded px-4 py-2 hover:bg-[#f0f5e9] transition">
             Se connecter
           </a>
         )}
