@@ -1,10 +1,10 @@
-from models.associations import db
+from models import db
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
-from models.associations import contenir
 
 class Tournoi(db.Model):
     __tablename__ = 'tournoi'
+
     idTournoi = Column(Integer, primary_key=True)
     nomTournoi = Column(String)
     descriptionTournoi = Column(String)
@@ -16,6 +16,3 @@ class Tournoi(db.Model):
     sport = relationship('Sport', backref='tournois')
 
     tableau = db.Column(Enum('simple', 'double', 'mixte', 'autre', name='tableau_type'), nullable=False)
-
-    # 💡 Ici on lie via la table d'association `contenir`
-    games = relationship('Game', secondary=contenir, backref='tournois')

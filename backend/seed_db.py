@@ -6,6 +6,7 @@ from models.reservation import Reservation
 from models.terrain import Terrain
 from models.tournoi import Tournoi
 from models.game import Game
+import models
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)

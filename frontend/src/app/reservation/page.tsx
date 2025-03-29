@@ -18,9 +18,36 @@ export default function SportSelection() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "jouer_amis";
 
-  const handleContinue = () => {
-    router.push(`/reservation/form?mode=${mode}`);
-  };
+  function convertToFullDate(label: string): string {
+      const dayNumber = parseInt(label.split(". ")[1]); // "Sam. 16" → 16
+      const base = new Date("2025-03-01");
+      base.setDate(dayNumber); // Ex: 16 → 2025-03-16
+      return base.toISOString().split("T")[0]; // → "2025-03-16"
+    }
+
+    const handleContinue = () => {
+      if (!selectedDate || selectedHours.length !== 2) {
+        alert("Veuillez sélectionner une date et un créneau horaire (2 heures consécutives).");
+        return;
+      }
+    
+      const heureDebut = selectedHours[0];
+      const heureFin = selectedHours[1];
+      const fullDate = convertToFullDate(selectedDate);
+    
+      sessionStorage.setItem("reservation_date", fullDate); // ✅ ici c’est fullDate !
+      sessionStorage.setItem("reservation_sport", selectedSport);
+      sessionStorage.setItem("reservation_heure_debut", heureDebut);
+      sessionStorage.setItem("reservation_heure_fin", heureFin);
+      sessionStorage.setItem("reservation_id", "3");
+    
+      router.push(`/reservation/form?mode=${mode}`);
+    };
+    
+
+  
+  
+  
 
   const toggleHourSelection = (hour: string) => {
     if (selectedHours.includes(hour)) {

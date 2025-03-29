@@ -9,7 +9,7 @@ export default function ReservationForm() {
   const mode = searchParams.get("mode") as
     | "jouer_amis"
     | "rechercher_adversaire"
-    | "inscription_tournoi";
+    | "creer_tournoi";
 
   const [price, setPrice] = useState("Gratuit");
   const [players, setPlayers] = useState([{ id: 1, isMember: undefined }]);
@@ -18,12 +18,22 @@ export default function ReservationForm() {
   const [totalPrice, setTotalPrice] = useState("Gratuit");
   const [sport, setSport] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
+  const [date, setDate] = useState<string | null>(null);
+  const [heureDebut, setHeureDebut] = useState<string | null>(null);
+  const [heureFin, setHeureFin] = useState<string | null>(null);
 
   useEffect(() => {
     const storedSport = sessionStorage.getItem("reservation_sport");
     const storedId = sessionStorage.getItem("reservation_id");
+    const storedDate = sessionStorage.getItem("reservation_date");
+    const storedDebut = sessionStorage.getItem("reservation_heure_debut");
+    const storedFin = sessionStorage.getItem("reservation_heure_fin");
+
     setSport(storedSport);
     setReservationId(storedId);
+    setDate(storedDate);
+    setHeureDebut(storedDebut);
+    setHeureFin(storedFin);
   }, []);
 
   const handleMembershipChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -51,6 +61,54 @@ export default function ReservationForm() {
     return nonUqac === 0 ? "Gratuit" : `${nonUqac * 7}$`;
   };
 
+  const handleSubmit = () => {
+    const form = document.getElementById("reservationForm") as HTMLFormElement;
+    if (form && form.checkValidity()) {
+      const formData = new FormData(form);
+      const data: any = {
+        sport,
+        mode,
+        reservationId,
+        dateReservation: date,
+        heureDebut,
+        heureFin,
+        prix: price,
+        joueurs: [],
+      };
+
+      formData.forEach((value, key) => {
+        if (key.startsWith("joueur_")) {
+          const [_, id, champ] = key.split("_");
+          const joueurIndex = data.joueurs.findIndex((j: any) => j.id === id);
+          if (joueurIndex === -1) {
+            const nouveau = { id };
+            nouveau[champ] = value;
+            data.joueurs.push(nouveau);
+          } else {
+            data.joueurs[joueurIndex][champ] = value;
+          }
+        } else {
+          data[key] = value;
+        }
+      });
+
+      console.log("📦 Données à envoyer au backend :", data);
+
+      fetch("http://localhost:5000/reservation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      setTotalPrice(calculateTotalPrice());
+      setShowPopup(true);
+    } else {
+      form.reportValidity();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 relative">
       <Header />
@@ -59,10 +117,14 @@ export default function ReservationForm() {
           <h2 className="text-2xl font-semibold mb-4">
             {mode === "jouer_amis" && "Ajouter le nombre de joueurs"}
             {mode === "rechercher_adversaire" && "Trouver un adversaire"}
-            {mode === "inscription_tournoi" && "Inscription au tournoi"}
+            {mode === "creer_tournoi" && "Créer un tournoi"}
           </h2>
 
           <form id="reservationForm" className="space-y-4">
+            <input type="hidden" name="dateReservation" value={date || ""} />
+            <input type="hidden" name="heureDebut" value={heureDebut || ""} />
+            <input type="hidden" name="heureFin" value={heureFin || ""} />
+            <input type="hidden" name="prix" value={price} />
             {players.map((player, index) => (
               <div key={player.id}>
                 <div className="flex justify-between items-center">
@@ -78,12 +140,14 @@ export default function ReservationForm() {
                   )}
                 </div>
 
+                <input type="hidden" name={`joueur_${player.id}_id`} value={player.id} />
+
                 <label className="block mt-2">Étudiant(e)/employé UQAC ?</label>
                 <div className="flex space-x-4">
                   <label>
                     <input
                       type="radio"
-                      name={`uqac_member_${player.id}`}
+                      name={`joueur_${player.id}_isMember`}
                       value="oui"
                       onChange={e => handleMembershipChange(e, index)}
                       required
@@ -93,7 +157,7 @@ export default function ReservationForm() {
                   <label>
                     <input
                       type="radio"
-                      name={`uqac_member_${player.id}`}
+                      name={`joueur_${player.id}_isMember`}
                       value="non"
                       onChange={e => handleMembershipChange(e, index)}
                     />
@@ -101,40 +165,43 @@ export default function ReservationForm() {
                   </label>
                 </div>
 
-                {player.isMember !== false && (
+                {player.isMember !== false ? (
                   <>
-                    <label className="block mt-4">Email UQAC</label>
+                    <label>Email UQAC</label>
                     <input
                       type="email"
+                      name={`joueur_${player.id}_email`}
                       className="w-full border p-2 rounded"
                       required
                     />
-                    <label className="block mt-2">Numéro étudiant</label>
+                    <label>Numéro étudiant</label>
                     <input
-                      type="number"
+                      type="text"
+                      name={`joueur_${player.id}_numero`}
                       className="w-full border p-2 rounded"
                       required
                     />
                   </>
-                )}
-
-                {player.isMember === false && (
+                ) : (
                   <>
-                    <label className="block mt-4">Prénom</label>
+                    <label>Prénom</label>
                     <input
                       type="text"
+                      name={`joueur_${player.id}_prenom`}
                       className="w-full border p-2 rounded"
                       required
                     />
-                    <label className="block mt-2">Nom</label>
+                    <label>Nom</label>
                     <input
                       type="text"
+                      name={`joueur_${player.id}_nom`}
                       className="w-full border p-2 rounded"
                       required
                     />
-                    <label className="block mt-2">Email personnel</label>
+                    <label>Email</label>
                     <input
                       type="email"
+                      name={`joueur_${player.id}_email`}
                       className="w-full border p-2 rounded"
                       required
                     />
@@ -143,106 +210,33 @@ export default function ReservationForm() {
               </div>
             ))}
 
-            {mode === "creer_tournoi" && (
+            {(mode === "creer_tournoi" || mode === "rechercher_adversaire") && (
               <>
-                <h3 className="text-xl font-bold mt-8">Le tournoi</h3>
+                <h3 className="text-xl font-bold mt-8">
+                  {mode === "creer_tournoi" ? "Le tournoi" : "L’adversaire recherché"}
+                </h3>
 
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Combien de joueurs souhaitez-vous avoir au minimum ? <span className="text-red-500">*</span>
-                  </label>
-                  <input type="number" className="w-full p-2 border border-gray-300 rounded-lg" required />
-                </div>
+                <label>Nombre de joueurs minimum</label>
+                <input name="minJoueurs" type="number" className="w-full p-2 border rounded" required />
 
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Et au maximum ? <span className="text-red-500">*</span>
-                  </label>
-                  <input type="number" className="w-full p-2 border border-gray-300 rounded-lg" required />
-                </div>
+                <label>Nombre de joueurs maximum</label>
+                <input name="maxJoueurs" type="number" className="w-full p-2 border rounded" required />
 
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Est-ce qu’il y a un niveau requis ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Aucun</button>
-                    </div>
-                  </div>
+                <label>Niveau requis</label>
+                <input name="niveau" type="text" className="w-full p-2 border rounded" />
 
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Quel sera votre type de tournoi ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Solo</button>
-                    </div>
-                  </div>
+                <label>
+                  {mode === "creer_tournoi" ? "Type de tournoi" : "Type de match"}
+                </label>
+                <input name="type" type="text" className="w-full p-2 border rounded" />
 
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Quel est le sexe des adversaires ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Mixte</button>
-                    </div>
-                  </div>
+                <label>Sexe des adversaires</label>
+                <input name="sexeAdversaires" type="text" className="w-full p-2 border rounded" />
 
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description du tournoi
-                    </label>
-                    <textarea className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Entrez la description du tournoi ..." />
-                  </div>
-                </div>
+                <label>Description</label>
+                <textarea name="description" className="w-full p-2 border rounded" />
               </>
             )}
-
-            {mode === "rechercher_adversaire" && (
-              <>
-                <h3 className="text-xl font-bold mt-8">L’adversaire recherché</h3>
-
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Combien de joueurs souhaitez-vous avoir au minimum ? <span className="text-red-500">*</span>
-                  </label>
-                  <input type="number" className="w-full p-2 border border-gray-300 rounded-lg" required />
-                </div>
-
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Et au maximum ? <span className="text-red-500">*</span>
-                  </label>
-                  <input type="number" className="w-full p-2 border border-gray-300 rounded-lg" required />
-                </div>
-
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Est-ce qu’il y a un niveau requis ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Aucun</button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Quel sera votre type de match ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Solo</button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Quel est le sexe des adversaires ? <span className="text-red-500">*</span></p>
-                    <div className="flex space-x-2">
-                      <button type="button" className="px-4 py-2 bg-gray-200 rounded">Mixte</button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
-                    </label>
-                    <textarea className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Entrez la description ..." />
-                  </div>
-                </div>
-              </>
-            )}
-
           </form>
 
           {mode === "jouer_amis" && players.length < 4 && (
@@ -254,27 +248,21 @@ export default function ReservationForm() {
               Ajouter un joueur
             </button>
           )}
-
-
         </div>
 
         <div className="w-80 mt-24 space-y-4">
           <div className="bg-white shadow p-4 rounded-lg">
             <h3 className="font-semibold">Résumé</h3>
-            <p>Sport: {sport}</p>
-            <p>Créneau: 18h à 19h (exemple)</p>
-            <p>Prix: {price}</p>
+            <p><span className="font-medium">Sport :</span> {sport || "Non précisé"}</p>
+            <p>
+              <span className="font-medium">Créneau :</span>{" "}
+              {heureDebut && heureFin ? `${heureDebut} à ${heureFin}` : "Non sélectionné"}
+            </p>
+            <p><span className="font-medium">Prix :</span> {price}</p>
+
             <button
               className="w-full bg-green-700 text-white py-2 mt-4 rounded"
-              onClick={() => {
-                const form = document.getElementById("reservationForm") as HTMLFormElement;
-                if (form && form.checkValidity()) {
-                  setTotalPrice(calculateTotalPrice());
-                  setShowPopup(true);
-                } else {
-                  form.reportValidity();
-                }
-              }}
+              onClick={handleSubmit}
             >
               Payer
             </button>

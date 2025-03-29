@@ -1,4 +1,4 @@
-from models.associations import db
+from models import db
 
 class Terrain(db.Model):
     __tablename__ = 'terrain'
