@@ -6,27 +6,24 @@ import Header from '../Composants/Header/page';
 
 const sports = ["Tennis", "Badminton", "Pickleball"];
 
-function generateNext9Days(): { label: string; iso: string }[] {
+function generateNext8Days(): { label: string; iso: string }[] {
   const jours = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
-  const today = new Date(); // Ne jamais modifier cette date de base
+  const today = new Date();
   const result: { label: string; iso: string }[] = [];
 
-  for (let i = 0; i < 9; i++) {
-    const date = new Date(today.getTime()); // Cloner today proprement
-    date.setDate(today.getDate() + i); // Incrément jour par jour
+  for (let i = 0; i < 8; i++) {
+    const date = new Date(today.getTime());
+    date.setDate(today.getDate() + i);
 
-    const label = `${jours[date.getDay()]} ${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const labelJour = `${jours[date.getDay()]} ${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const label = i === 0 ? `Aujourd'hui (${labelJour})` : labelJour;
     const iso = date.toISOString().split("T")[0];
 
-    console.log(`📆 ${label} — ${iso}`);
     result.push({ label, iso });
   }
 
   return result;
 }
-
-
-
 
 export default function SportSelection() {
   const [selectedSport, setSelectedSport] = useState<string>("Tennis");
@@ -39,12 +36,10 @@ export default function SportSelection() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "jouer_amis";
 
-  // 📅 Initialiser les dates dynamiques
   useEffect(() => {
-    setDates(generateNext9Days());
+    setDates(generateNext8Days());
   }, []);
 
-  // 🔄 Charger les créneaux disponibles
   useEffect(() => {
     if (!selectedDate || !selectedSport) return;
 
@@ -59,7 +54,6 @@ export default function SportSelection() {
       });
   }, [selectedDate, selectedSport]);
 
-  // ✅ Continuer
   const handleContinue = () => {
     if (!selectedDate || selectedHours.length !== 2) {
       alert("Veuillez sélectionner une date et un créneau horaire (2 heures consécutives).");
@@ -77,7 +71,6 @@ export default function SportSelection() {
     router.push(`/reservation/form?mode=${mode}`);
   };
 
-  // ⏱️ Gestion sélection heures
   const toggleHourSelection = (hour: string) => {
     if (selectedHours.includes(hour)) {
       setSelectedHours(selectedHours.filter(h => h !== hour));
@@ -138,7 +131,6 @@ export default function SportSelection() {
                 </label>
               ))}
             </div>
-            
 
             {/* Créneaux horaires disponibles */}
             <div className="space-y-2">

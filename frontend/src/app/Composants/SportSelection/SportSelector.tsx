@@ -10,61 +10,54 @@ type Props = {
 };
 
 const sports = ["Tennis", "Badminton", "Pickleball"];
-const dates = ["Sam. 16", "Lun. 17", "Mar. 18", "Mer. 19", "Jeu. 20", "Ven. 21", "Sam. 22", "Dim. 23", "Lun. 24"];
 const hours = ["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"];
 
+function generateNext8Days(): string[] {
+  const jours = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
+  const today = new Date();
+  const result: string[] = [];
+
+  for (let i = 0; i < 8; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    const label = `${jours[date.getDay()]} ${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
+    result.push(i === 0 ? `Aujourd'hui (${label})` : label);
+  }
+
+  return result;
+}
+
 export default function SportSelector({ title, breadcrumb, restrictionNote }: Props) {
-  const today = dates[0];
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const mode = searchParams.get("mode") || "jouer_amis";
   const sportFromURL = searchParams.get("sport");
 
-  const [selectedSport, setSelectedSport] = useState<string>(sportFromURL || "Tennis");
-  const [selectedDate, setSelectedDate] = useState<string>(today);
+  const [dates, setDates] = useState<string[]>([]);
+  const [selectedSport, setSelectedSport] = useState<string>("Tennis");
+  const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedHours, setSelectedHours] = useState<string[]>([]);
 
-  // 🧠 Met à jour l’URL à chaque changement de sport
+  useEffect(() => {
+    const generatedDates = generateNext8Days();
+    setDates(generatedDates);
+    setSelectedDate(generatedDates[0]);
+    if (sportFromURL) {
+      setSelectedSport(sportFromURL);
+    }
+  }, [sportFromURL]);
+
   const handleSportChange = (sport: string) => {
     setSelectedSport(sport);
     const current = new URLSearchParams(Array.from(searchParams.entries()));
-    current.set("sport", sport.toLowerCase()); // propre pour l’URL
+    current.set("sport", sport.toLowerCase());
     router.push(`?${current.toString()}`);
   };
 
-  const handleContinue = async () => {
-    const response = await fetch("http://localhost:5000/reservation", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        dateReservation: selectedDate,
-        heureDebut: selectedHours[0],
-        heureFin: selectedHours[1] || selectedHours[0],
-        statutReservation: "en_attente"
-      }),
-    });
-  
-    if (response.ok) {
-      const result = await response.json();
-      const reservationId = result.id;
-      // Juste avant la redirection
-      sessionStorage.setItem("reservation_sport", selectedSport.toLowerCase());
-      sessionStorage.setItem("reservation_id", reservationId.toString());
-
-      router.push(`/reservation/form?mode=${mode}`);
-
-    } else {
-      alert("Erreur lors de la réservation !");
-    }
-  };
-  
-
   const toggleHourSelection = (hour: string) => {
     if (selectedHours.includes(hour)) {
-      setSelectedHours(selectedHours.filter((h) => h !== hour));
+      setSelectedHours(selectedHours.filter(h => h !== hour));
     } else if (selectedHours.length < 2) {
       setSelectedHours([...selectedHours, hour].sort());
     }
@@ -72,17 +65,45 @@ export default function SportSelector({ title, breadcrumb, restrictionNote }: Pr
 
   const getFormattedHours = () => {
     if (selectedHours.length === 2) {
-      const firstHour = parseInt(selectedHours[0]);
-      const secondHour = parseInt(selectedHours[1]);
-      if (secondHour === firstHour + 1) {
-        return `${selectedHours[0]} à ${secondHour + 1}:00`;
-      } else {
-        return selectedHours.map((hour) => `${hour} à ${parseInt(hour) + 1}:00`).join(" | ");
-      }
+      const [h1, h2] = selectedHours.map(h => parseInt(h));
+      return h2 === h1 + 1
+        ? `${selectedHours[0]} à ${h2 + 1}:00`
+        : selectedHours.map(h => `${h} à ${parseInt(h) + 1}:00`).join(" | ");
     }
     return selectedHours.length === 1
       ? `${selectedHours[0]} à ${parseInt(selectedHours[0]) + 1}:00`
-      : "Veuillez sélectionner une heure";
+      : "Veuillez sélectionner deux créneaux consécutifs";
+  };
+
+  const handleContinue = () => {
+    if (selectedHours.length !== 2) {
+      alert("Veuillez sélectionner deux créneaux horaires.");
+      return;
+    }
+
+    const [heure1, heure2] = selectedHours.map(h => parseInt(h));
+    if (Math.abs(heure1 - heure2) !== 1) {
+      alert("Les créneaux doivent être consécutifs (ex : 18:00 et 19:00)");
+      return;
+    }
+
+    const heureDebut = Math.min(heure1, heure2).toString().padStart(2, "0") + ":00";
+    const heureFin = (Math.max(heure1, heure2) + 1).toString().padStart(2, "0") + ":00";
+
+    console.log("🎯 Sauvegarde sessionStorage :", {
+      date: selectedDate,
+      heureDebut,
+      heureFin,
+      sport: selectedSport
+    });
+
+    sessionStorage.setItem("reservation_date", selectedDate);
+    sessionStorage.setItem("reservation_heure_debut", heureDebut);
+    sessionStorage.setItem("reservation_heure_fin", heureFin);
+    sessionStorage.setItem("reservation_sport", selectedSport.toLowerCase());
+    sessionStorage.setItem("reservation_id", "3"); // ID fictif ou réel selon besoin
+
+    router.push(`/reservation/form?mode=${mode}`);
   };
 
   return (
